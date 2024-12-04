@@ -31,36 +31,79 @@ const result = parseTextFileToArrays(inputFilePath);
 
 let safeReportsAmount = 0
 
-const getDirection = (num1, num2) => num1 > num2 ? 'asc' : 'desc'
+const getDirection = (num1, num2) => num1 > num2 ? 'asc' :  num1 < num2 ? 'desc' : 'equal'
+
+let asc = 0
+let desc = 0
+
+let arrays = []
 
 const isSafe = (arr) => {
-    let isSafe = true;
+    let diffs = []
 
-    let direction = getDirection(arr[0], arr[1])
+    for(let i = 0; i < arr.length - 1; i++){
+        const diff = arr[i] - arr[i+1]
+        diffs.push(diff)
+    } 
+    
+    arrays.push(diffs)
 
-    if(direction === 'asc'){        
-        for(let i = 0; i < arr.length - 1; i++){
-            const diff = arr[i] - arr[i+1]
-            
-            if(diff <= 0 || diff > 3){
-                isSafe = false
-            }
-        }
-    } else {
-         for(let i = 0; i < arr.length - 1; i++){
-            const diff = arr[i + 1] - arr[i]
-            console.log(diff);
-            
-            if(diff <= 0 ||  diff > 3){
-                isSafe = false
-            }
-        }
-    }
-    if(isSafe){
+    if(diffs.every(n => n < 0 && n > -4)){
         safeReportsAmount++
-    }
+    } else if(diffs.every(n => n > 0 && n < 4)){
+        safeReportsAmount++
+    } else {
+        let errors = 0
+        let negatives = 0
+        let positives = 0
+        let equals = 0
+        diffs.forEach(d => {
+            d > 0 ? positives++ : d < 0 ? negatives++ : equals++
+            if(d > 3 || d < -3 || d === 0){
+                errors += 1
+            }
+        })
 
+        
+
+        if(errors < 2) {
+            
+            let currentError = 0;
+
+            if(negatives > positives){
+                
+                diffs.forEach(d => {
+                    if(d < -3 || d >= 0){
+                        currentError += 1
+                    }
+                })
+
+                if(currentError < 2){
+                    safeReportsAmount++
+                }
+            } else if(
+                positives > negatives
+            ){
+               
+                diffs.forEach(d => {
+                    if(d > 3 || d <= 0){
+                        currentError += 1
+                    }
+                })
+
+                if(currentError < 2){
+                    safeReportsAmount++
+                }
+            }
+            //if(negatives > 0 && poi)
+            
+        }
+        
+        
+    }
 }
+
+
 
 result.forEach(arr => isSafe(arr))
 
